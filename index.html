@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>calcular</title>
+</head>
+<body>
+    <div>
+    <h1>lista de tarefa</h1>
+    <input type="text" id="atividade" placeholder="lista-atividade">
+    <button onclick="adicionartarefa()">adicionar</button>
+    <button onclick="removertarefa()">retonar</button>
+    <ul id="lista-tarefa"></ul>
+    </div>
+
+    <script>
+         function adicionartarefa() {
+            const input = document.getElementById('atividade');
+            const valor = input.value.trim();
+            
+            if (valor === ""){
+                alert("adicionar tarefa.");
+                return;
+            }
+
+            const lista = document.getElementById("lista-tarefa");
+            const item = document.createElement('li');
+            item.textContent = valor;
+            lista.appendChild(item);
+
+            alert("tarefa adicionada!");
+            input.value = "";
+         }
+         
+
+         function removertarefa () {
+            const lista = document.getElementById('lista-tarefa');
+            
+            if (lista.lastChild){
+                lista.removeChild(lista.lastChild);
+                alert("tarefa removida!");
+            } else { 
+               alert("nenhuma tarefa para remover.");
+      
+            }
+        }   
+    </script>
+</body>
+</html>
