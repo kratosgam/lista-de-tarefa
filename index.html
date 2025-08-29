@@ -1,50 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>calcular</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista de Tarefa</title>
+    <style>
+      .concluida {
+        text-decoration: line-through;
+        color: gray;
+      }
+    </style>
+  </head>
+  <body>
     <div>
-    <h1>lista de tarefa</h1>
-    <input type="text" id="atividade" placeholder="lista-atividade">
-    <button onclick="adicionartarefa()">adicionar</button>
-    <button onclick="removertarefa()">retonar</button>
-    <ul id="lista-tarefa"></ul>
+      <h1>Lista de Tarefa</h1>
+      <input type="text" id="atividade" placeholder="Digite uma tarefa" />
+      <button onclick="adicionartarefa()">Adicionar</button>
+      <button onclick="removertodas()">Remover Tudo</button>
+
+      <input type="text" id="pesquisar" placeholder="pesquisar tarefas" />
+      <ul id="lista-tarefa"></ul>
     </div>
 
     <script>
-         function adicionartarefa() {
-            const input = document.getElementById('atividade');
-            const valor = input.value.trim();
-            
-            if (valor === ""){
-                alert("adicionar tarefa.");
-                return;
-            }
+      const input = document.getElementById("atividade");
+      const lista = document.getElementById("lista-tarefa");
 
-            const lista = document.getElementById("lista-tarefa");
-            const item = document.createElement('li');
-            item.textContent = valor;
-            lista.appendChild(item);
+      // Quando a página carrega, exibe as tarefas salvas
+      window.onload = function () {
+        const tarefasSalvas = JSON.parse(localStorage.getItem("tarefas")) || [];
+        tarefasSalvas.forEach((tarefa) => {
+          criarItem(tarefa);
+        });
+      };
 
-            alert("tarefa adicionada!");
-            input.value = "";
-         }
-         
+      // Adiciona tarefa ao pressionar Enter
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          adicionartarefa();
+        }
+      });
 
-         function removertarefa () {
-            const lista = document.getElementById('lista-tarefa');
-            
-            if (lista.lastChild){
-                lista.removeChild(lista.lastChild);
-                alert("tarefa removida!");
-            } else { 
-               alert("nenhuma tarefa para remover.");
-      
-            }
-        }   
+      function adicionartarefa() {
+        const valor = input.value.trim();
+
+        if (valor === "") {
+          alert("Adicione uma tarefa.");
+          return;
+        }
+
+        criarItem(valor);
+        salvartarefa(valor);
+        input.value = "";
+      }
+
+      function criarItem(texto) {
+        const item = document.createElement("li");
+        item.textContent = texto;
+
+        // Marca como concluída
+        item.addEventListener("click", function () {
+          item.classList.toggle("concluida");
+        });
+
+        // Remove com botão direito
+        item.addEventListener("contextmenu", function (event) {
+          event.preventDefault();
+          lista.removeChild(item);
+          removertarefa(texto);
+        });
+
+        lista.appendChild(item);
+      }
+
+      function salvartarefa(tarefa) {
+        const tarefas = JSON.parse(localStorage.getItem("tarefas")) || [];
+        tarefas.push(tarefa);
+        localStorage.setItem("tarefas", JSON.stringify(tarefas));
+      }
+
+      function removertarefa(tarefaRemover) {
+        let tarefas = JSON.parse(localStorage.getItem("tarefas")) || [];
+        tarefas = tarefas.filter((tarefa) => tarefa !== tarefaRemover);
+        localStorage.setItem("tarefas", JSON.stringify(tarefas));
+      }
+
+      function removertodas() {
+        if (confirm("Tem certeza que deseja remover todas as tarefas?")) {
+          lista.innerHTML = "";
+          localStorage.removeItem("tarefas");
+        }
+      }
+      pesquisa.addEventListener("input", function () {
+        const filtro = pesquisa.value.tolowercasa();
+        const itens = lista.getElementsByTagName("li");
+
+        Array.from(itens).forEach(function (item) {
+          const textoItem = item.textContent.toLowerCase();
+          if (textoItem.includes(filtro)) {
+            item.style.display = "";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
